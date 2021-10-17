@@ -342,7 +342,38 @@ public class Autocomplete {
          *             IllegalArgumentException if weight is negative.
          */
         private void add(String word, double weight) {
-            // TODO: Implement add
+            if(word == null || word.length() == 0) {
+                throw new NullPointerException("word must not be null");
+            }
+            if(weight<0){
+                throw new IllegalArgumentException("weight must be positive");
+            }
+            Node temp = myRoot;
+            int i = 0;
+            while(temp.children.containsKey(word.charAt(i))){
+                temp = temp.children.get(word.charAt(i));
+                if(i==word.length()-1){
+                    temp.isWord = true;
+                    temp.setWeight(weight);
+                    temp.setWord(word);
+                    return;
+                }
+                if(temp.mySubtreeMaxWeight<weight){
+                    temp.mySubtreeMaxWeight = weight;
+                }
+                i++;
+            }
+            i--;
+
+            for(;i<word.length();i++){
+                Node newNode = new Node(word.charAt(i), temp, weight);
+                temp.children.put(word.charAt(i), newNode);
+                temp = newNode;
+            }
+            temp.isWord = true;
+            temp.setWord(word);
+
+
         }
 
         /**
@@ -366,6 +397,22 @@ public class Autocomplete {
          *             NullPointerException if prefix is null
          */
         public Iterable<String> topMatches(String prefix, int k) {
+            if(prefix == null || prefix.length() == 0){
+                throw new NullPointerException("prefix must not be null");
+            }
+            Node temp = myRoot;
+            for(char c: prefix.toCharArray()){
+                temp = temp.getChild(c);
+            }
+            Set<Character> keyset = temp.children.keySet();
+            PriorityQueue<Node> pq = new PriorityQueue<>(keyset.size(), new Node.ReverseSubtreeMaxWeightComparator());
+            for(Character c: keyset){
+                pq.add(temp.getChild(c));
+            }
+            for(Node n: pq){
+
+
+            }
             // TODO: Implement topKMatches
             return null;
         }
@@ -382,7 +429,6 @@ public class Autocomplete {
          *             NullPointerException if the prefix is null
          */
         public String topMatch(String prefix) {
-            // TODO: Implement topMatch
             return null;
         }
 
@@ -391,7 +437,15 @@ public class Autocomplete {
          * return 0.0
          */
         public double weightOf(String term) {
-            // TODO complete weightOf
+            Node temp = myRoot;
+            int i = 0;
+            while(temp.children.containsKey(term.charAt(i))){
+                temp = temp.getChild(term.charAt(i));
+                i++;
+            }
+            if(temp.isWord && temp.myWord.equals(term)){
+                return temp.getWeight();
+            }
             return 0.0;
         }
 
