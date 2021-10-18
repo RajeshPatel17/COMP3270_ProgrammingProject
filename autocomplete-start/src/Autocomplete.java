@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Collections;
 import java.util.PriorityQueue;
+import java.util.*;
 
 public class Autocomplete {
         /**
@@ -363,7 +364,7 @@ public class Autocomplete {
                 }
                 i++;
             }
-            i--;
+            //i--;
 
             for(;i<word.length();i++){
                 Node newNode = new Node(word.charAt(i), temp, weight);
@@ -372,6 +373,7 @@ public class Autocomplete {
             }
             temp.isWord = true;
             temp.setWord(word);
+            temp.setWeight(weight);
 
 
         }
@@ -402,19 +404,48 @@ public class Autocomplete {
             }
             Node temp = myRoot;
             for(char c: prefix.toCharArray()){
-                temp = temp.getChild(c);
+                if(temp != null){
+                    temp = temp.getChild(c);
+                }
             }
-            Set<Character> keyset = temp.children.keySet();
-            PriorityQueue<Node> pq = new PriorityQueue<>(keyset.size(), new Node.ReverseSubtreeMaxWeightComparator());
-            for(Character c: keyset){
-                pq.add(temp.getChild(c));
+            /*PriorityQueue<Node> pq = new PriorityQueue<>(new Node.ReverseSubtreeMaxWeightComparator());
+            for(Node child: temp.children.values()){
+                pq.add(child);
             }
+            PriorityQueue<Node> answer = new PriorityQueue<>(new Node.ReverseSubtreeMaxWeightComparator());
             for(Node n: pq){
-
-
+                if(n.isWord && n.getWeight() == n.mySubtreeMaxWeight){
+                    answer.add(n);
+                } else {
+                    for(Node child: n.children.values()){
+                        pq.add(child);
+                    }
+                }
+            }*/
+            PriorityQueue<Node> answer = new PriorityQueue<>(new Node.ReverseSubtreeMaxWeightComparator());
+            Stack<Node> stack = new Stack<>();
+            stack.push(temp);
+            while(!stack.empty()){
+                Node n = stack.pop();
+                if(n==null){
+                    break;
+                }
+                if(n.isWord){
+                    answer.add(n);
+                }
+                for(Node node: n.children.values()){
+                    stack.push(node);
+                }
+            }
+            List<String> list = new ArrayList<>();
+            for(int i = 0; i<k; i++){
+                if(answer.size()==0){
+                    break;
+                }
+                list.add(answer.poll().getWord());
             }
             // TODO: Implement topKMatches
-            return null;
+            return list;
         }
 
         /**
@@ -429,7 +460,25 @@ public class Autocomplete {
          *             NullPointerException if the prefix is null
          */
         public String topMatch(String prefix) {
-            return null;
+            if(prefix == null || prefix.length() == 0){
+                throw new NullPointerException("prefix must not be null");
+            }
+            Node temp = myRoot;
+            int i = 0;
+            while(temp.children.containsKey(prefix.charAt(i))){
+                temp = temp.getChild(prefix.charAt(i));
+                i++;
+            }
+            while(temp.getWeight() != temp.mySubtreeMaxWeight){
+                Collection<Node> nodes = temp.children.values();
+                for(Node node : nodes){
+                    if(node.mySubtreeMaxWeight == temp.mySubtreeMaxWeight){
+                        temp = node;
+                        break;
+                    }
+                }
+            }
+            return temp.myWord;
         }
 
         /**
@@ -439,7 +488,7 @@ public class Autocomplete {
         public double weightOf(String term) {
             Node temp = myRoot;
             int i = 0;
-            while(temp.children.containsKey(term.charAt(i))){
+            while(i<term.length() &&temp.children.containsKey(term.charAt(i))){
                 temp = temp.getChild(term.charAt(i));
                 i++;
             }
