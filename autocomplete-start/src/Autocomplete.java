@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.PriorityQueue;
 import java.util.*;
 
+
 public class Autocomplete {
         /**
          * Uses binary search to find the index of the first Term in the passed in
@@ -364,7 +365,6 @@ public class Autocomplete {
                 }
                 i++;
             }
-            //i--;
 
             for(;i<word.length();i++){
                 Node newNode = new Node(word.charAt(i), temp, weight);
@@ -399,29 +399,51 @@ public class Autocomplete {
          *             NullPointerException if prefix is null
          */
         public Iterable<String> topMatches(String prefix, int k) {
-            if(prefix == null || prefix.length() == 0){
+            if(prefix == null){
                 throw new NullPointerException("prefix must not be null");
             }
+            if(prefix.length()==0 || k==0){
+                return new ArrayList<String>();
+            }
             Node temp = myRoot;
-            for(char c: prefix.toCharArray()){
+            int i = 0;
+            while(i < prefix.length() && temp.children.containsKey(prefix.charAt(i))){
+                temp = temp.getChild(prefix.charAt(i));
+                i++;
+            }
+            PriorityQueue<Node> pq = new PriorityQueue<Node>(new Node.ReverseSubtreeMaxWeightComparator());
+            pq.add(temp);
+            PriorityQueue<Node> topKMatches = new PriorityQueue<Node>();
+            while( (!pq.isEmpty()) && (topKMatches.size()<k || pq.peek().mySubtreeMaxWeight>topKMatches.peek().getWeight())){
+                Node n = pq.poll();
+                if(n == null){
+                    break;
+                }
+                if(topKMatches.size()<k && n.isWord && n.getWord().startsWith(prefix)){
+                    topKMatches.add(n);
+                } else if (!topKMatches.isEmpty() && topKMatches.peek().getWeight()<n.getWeight() && n.getWord().startsWith(prefix)){
+                    topKMatches.remove();
+                    topKMatches.add(n);
+                }
+                pq.addAll(n.children.values());
+            }
+            List<String> list = new ArrayList<>();
+            while(!topKMatches.isEmpty()){
+                list.add(topKMatches.poll().getWord());
+            }
+            Collections.reverse(list);
+            
+            
+            
+            
+            
+            
+            /*for(char c: prefix.toCharArray()){
                 if(temp != null){
                     temp = temp.getChild(c);
                 }
             }
-            /*PriorityQueue<Node> pq = new PriorityQueue<>(new Node.ReverseSubtreeMaxWeightComparator());
-            for(Node child: temp.children.values()){
-                pq.add(child);
-            }
-            PriorityQueue<Node> answer = new PriorityQueue<>(new Node.ReverseSubtreeMaxWeightComparator());
-            for(Node n: pq){
-                if(n.isWord && n.getWeight() == n.mySubtreeMaxWeight){
-                    answer.add(n);
-                } else {
-                    for(Node child: n.children.values()){
-                        pq.add(child);
-                    }
-                }
-            }*/
+            //create list of nodes that we can sort, use collections.sortreverseorder so highest->lowest.
             PriorityQueue<Node> answer = new PriorityQueue<>(new Node.ReverseSubtreeMaxWeightComparator());
             Stack<Node> stack = new Stack<>();
             stack.push(temp);
@@ -443,7 +465,8 @@ public class Autocomplete {
                     break;
                 }
                 list.add(answer.poll().getWord());
-            }
+            }*/
+
             // TODO: Implement topKMatches
             return list;
         }
@@ -460,12 +483,15 @@ public class Autocomplete {
          *             NullPointerException if the prefix is null
          */
         public String topMatch(String prefix) {
-            if(prefix == null || prefix.length() == 0){
+            if(prefix == null){
                 throw new NullPointerException("prefix must not be null");
+            }
+            if(prefix.length()==0) {
+                return "";
             }
             Node temp = myRoot;
             int i = 0;
-            while(temp.children.containsKey(prefix.charAt(i))){
+            while(i < prefix.length() && temp.children.containsKey(prefix.charAt(i))){
                 temp = temp.getChild(prefix.charAt(i));
                 i++;
             }
@@ -477,6 +503,9 @@ public class Autocomplete {
                         break;
                     }
                 }
+            }
+            if(temp == myRoot){
+                return "";
             }
             return temp.myWord;
         }
