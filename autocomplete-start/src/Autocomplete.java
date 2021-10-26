@@ -344,15 +344,18 @@ public class Autocomplete {
          *             IllegalArgumentException if weight is negative.
          */
         private void add(String word, double weight) {
-            if(word == null || word.length() == 0) {
+            if(word == null/* || word.length() == 0*/) {
                 throw new NullPointerException("word must not be null");
+            }
+            if(word.length()==0){
+                return;
             }
             if(weight<0){
                 throw new IllegalArgumentException("weight must be positive");
             }
             Node temp = myRoot;
             int i = 0;
-            while(temp.children.containsKey(word.charAt(i))){
+            while(i<word.length() && temp.children.containsKey(word.charAt(i))){
                 temp = temp.children.get(word.charAt(i));
                 if(i==word.length()-1){
                     temp.isWord = true;
@@ -402,9 +405,9 @@ public class Autocomplete {
             if(prefix == null){
                 throw new NullPointerException("prefix must not be null");
             }
-            if(prefix.length()==0 || k==0){
+            /*if(prefix.length()==0 || k==0){
                 return new ArrayList<String>();
-            }
+            }*/
             Node temp = myRoot;
             int i = 0;
             while(i < prefix.length() && temp.children.containsKey(prefix.charAt(i))){
@@ -432,42 +435,6 @@ public class Autocomplete {
                 list.add(topKMatches.poll().getWord());
             }
             Collections.reverse(list);
-            
-            
-            
-            
-            
-            
-            /*for(char c: prefix.toCharArray()){
-                if(temp != null){
-                    temp = temp.getChild(c);
-                }
-            }
-            //create list of nodes that we can sort, use collections.sortreverseorder so highest->lowest.
-            PriorityQueue<Node> answer = new PriorityQueue<>(new Node.ReverseSubtreeMaxWeightComparator());
-            Stack<Node> stack = new Stack<>();
-            stack.push(temp);
-            while(!stack.empty()){
-                Node n = stack.pop();
-                if(n==null){
-                    break;
-                }
-                if(n.isWord){
-                    answer.add(n);
-                }
-                for(Node node: n.children.values()){
-                    stack.push(node);
-                }
-            }
-            List<String> list = new ArrayList<>();
-            for(int i = 0; i<k; i++){
-                if(answer.size()==0){
-                    break;
-                }
-                list.add(answer.poll().getWord());
-            }*/
-
-            // TODO: Implement topKMatches
             return list;
         }
 
