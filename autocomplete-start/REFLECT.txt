@@ -1,6 +1,18 @@
-Name: firstname lastname
-AUID: abc123
-Hours Spent: Give an exact (decimal) number here
-Consulted With: provide names or AUID of any students, TAs, or professors you consulted with on the assignment. If you did not consult with anyone, you must explicitly write NONE.
-Resources Used: Any books, papers, or online resources. If you did not use any outside resources, you must explicitly write NONE 
-Impressions: Your answer here
+Name: Rajesh Patel
+AUID: rrp0019
+Hours Spent: 20.5
+Consulted With: Consulted with Tyler Ray (tpr0010) and Joel Gush (jag0102)
+Resources Used: Did not use any outside resources dealing with the code itself. Only with setting up the environment.
+Impressions: The code for the project is not bad but the specifications were atrocious and the TAs seemed to lack knowledge on clarifying the specifications which seems to be as a result of the professor
+    not knowing exact specifications.
+
+    PLAGARISM
+
+    I certify that I wrote the code I am submitting. 
+    I did not copy whole or parts of it from another student or have another person write the code for me. 
+    Any code I am reusing in my program from the web or some other source is clearly marked as such with its source clearly identified in comments. 
+
+IDE: VSCode
+Machine: Windows 10
+Compiler: Eclipse - jdk-16.0.2.7-hotspot    (https://eclipse-temurin-jdk-with-hotspot-16-0-2-7-x64.updatestar.com/en)
+JUnit Version: 4.13

@@ -1,6 +1,9 @@
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
+
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.ArrayList;
@@ -8,6 +11,7 @@ import java.util.LinkedList;
 import java.util.Collections;
 import java.util.PriorityQueue;
 import java.util.*;
+import junit.*;
 
 
 public class Autocomplete {
@@ -405,9 +409,6 @@ public class Autocomplete {
             if(prefix == null){
                 throw new NullPointerException("prefix must not be null");
             }
-            /*if(prefix.length()==0 || k==0){
-                return new ArrayList<String>();
-            }*/
             Node temp = myRoot;
             int i = 0;
             while(i < prefix.length() && temp.children.containsKey(prefix.charAt(i))){
@@ -462,6 +463,9 @@ public class Autocomplete {
                 temp = temp.getChild(prefix.charAt(i));
                 i++;
             }
+            if(temp == myRoot){
+                return "";
+            }
             while(temp.getWeight() != temp.mySubtreeMaxWeight){
                 Collection<Node> nodes = temp.children.values();
                 for(Node node : nodes){
@@ -508,6 +512,39 @@ public class Autocomplete {
          */
         public Iterable<String> spellCheck(String word, int dist, int k) {
             return null;
+        }
+    }
+    @Test
+    public void trieAddTest(){
+        String[] terms = { "car", "ape", "bee", "app", "bat", "ban", "cat"};
+        double[] weights = {7,6,5,4,3,2,1};
+        TrieAutocomplete ta = new TrieAutocomplete(terms, weights);
+        for(String s: ta.topMatches("", 8)){
+            System.out.print(s +" "); //{”car”, ”ape”, ”bee”, ”app”, ”bat”, ”ban”, ”cat”}
+        }
+        System.out.println();
+        for(String s: ta.topMatches("", 1)){
+            System.out.print(s +" "); //{”car”}
+        }
+        System.out.println();
+        for(String s: ta.topMatches("", 2)){
+            System.out.print(s +" "); //{”car”, ”ape”}
+        }
+        System.out.println();
+        for(String s: ta.topMatches("", 3)){
+            System.out.print(s +" "); //{”car”, ”ape”, ”bee”}
+        }
+        System.out.println();
+        for(String s: ta.topMatches("a", 1)){
+            System.out.print(s +" "); //{”ape”}
+        }
+        System.out.println();
+        for(String s: ta.topMatches("ap", 1)){
+            System.out.print(s +" "); //{”ape”}
+        }
+        System.out.println();
+        for(String s: ta.topMatches("ba", 2)){
+            System.out.print(s +" "); //{”bee”, "bat"}
         }
     }
 }
